@@ -8,6 +8,7 @@ from tkinter import messagebox
 from tkinter import ttk
 import IO
 import Data
+import time
 
 
 class GUI:
@@ -95,7 +96,7 @@ class GUI:
         self.progress = Progressbar(self.master, length=300, style='black.Horizontal.TProgressbar', variable=self.current_progress_var, maximum=100)
         self.progress.grid(column=1, row=7, columnspan=3, pady=15)
         
-        self.button_run = tkinter.Button(self.master, text="Execute", bg="#d2f9c2", fg=self.button_fg, command=self.execute_button_action)
+        self.button_run = tkinter.Button(self.master, text="Execute", bg="#d2f9c2", fg=self.button_fg, command=self.execute_button_error_catch)
         self.button_run.grid(column=0, row=7, padx=15, pady=15)
         
         self.master.mainloop()
@@ -119,6 +120,12 @@ class GUI:
         for i in self.files:
             self.file_list.insert(tkinter.END, str(i)+'\n')
         self.master.focus()
+        
+    def execute_button_error_catch(self):
+        try:
+            self.execute_button_action()
+        except Exception as e:
+            tkinter.messagebox.showerror('Error Occurred', str(e))
     
     def execute_button_action(self):
         if len(self.files)<1:
@@ -126,6 +133,7 @@ class GUI:
         elif self.destination_file is None:
             tkinter.messagebox.showwarning("No Destination File selected", "You have not specified a save location.")
         else:
+            self.start = time.time()
             self.window_size=0.2
             self.threshold=None
             try:
@@ -144,24 +152,23 @@ class GUI:
             self.out_data.append(["Path", "File", "Mass/Charge", "Intensity"])
             self.current_progress=0
             for f in self.files:
-                try:
-                    test = IO.CSVFileReader(f)
-                    test.read()
-                    data = Data.DataSet(test)
-                    data.window_max(window_size=float(self.window_size))
-                    for row in data.max_points:
-                        if self.threshold is None and row.y>data.average_non_inflections and row.max_at_x and row.active and row.inflection:
+                test = IO.CSVFileReader(f)
+                test.read()
+                data = Data.DataSet(test)
+                data.window_max(window_size=float(self.window_size))
+                for row in data.max_points:
+                    if self.threshold is None and row.y>data.average_non_inflections and row.max_at_x and row.active and row.inflection:
+                        self.out_data.append([str(data.path), str(data.name), str(row.x), str(row.y)])
+                    elif not self.threshold is None:
+                        if row.y>self.threshold and row.max_at_x and row.active and row.inflection:
                             self.out_data.append([str(data.path), str(data.name), str(row.x), str(row.y)])
-                        elif not self.threshold is None:
-                            if row.y>self.threshold and row.max_at_x and row.active and row.inflection:
-                                self.out_data.append([str(data.path), str(data.name), str(row.x), str(row.y)])
-                except Exception as e:
-                    tkinter.messagebox.showerror("Error Occurred", str(e))                
                 self.current_progress+=1
                 self.current_progress_var.set((self.current_progress/len(self.files))*100)
                 self.master.update_idletasks()
-                out = IO.CSVFileWriter(pathlib.Path(self.destination), self.out_data)
-                out.write()
+            out = IO.CSVFileWriter(pathlib.Path(self.destination), self.out_data)
+            out.write()
+            self.stop = time.time()
+            tkinter.messagebox.showinfo("Complete!", "Processed {} files, exported {} rows of data, in {:.1f} seconds".format(len(self.files), len(self.out_data)-1, self.stop-self.start))
 
 if __name__ == "__main__":
     GUI()
