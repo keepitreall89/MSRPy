@@ -110,7 +110,7 @@ class GUI:
         self.label_output_type.grid(column=3, row=6, sticky='e')
         
         self.combo_output = tkinter.ttk.Combobox(self.master)
-        self.combo_output['values'] = ('Filtered Only', 'Max values at each M/C', 'All Data')
+        self.combo_output['values'] = ('Filtered Only', 'Max values at each M/Z', 'All Data')
         self.combo_output.current(0)
         self.combo_output.grid(column=4, row=6, sticky='we')
         

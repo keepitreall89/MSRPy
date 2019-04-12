@@ -128,16 +128,18 @@ class DataSet:
         current_index = index-1
         in_range=True
         while current_index>=0 and in_range:
-            if abs(x_value-self.max_points[current_index].x)<=float(window_size) and self.max_points[current_index].active:
-                return_list.append(self.max_points[current_index])
+            if abs(x_value-self.max_points[current_index].x)<=float(window_size):
+                if self.max_points[current_index].active:
+                    return_list.append(self.max_points[current_index])
             else:
                 in_range = False
             current_index -= 1
         current_index = index + 1
         in_range = True
         while current_index<len(self.max_points) and in_range:
-            if abs(x_value-self.max_points[current_index].x)<=float(window_size) and self.max_points[current_index].active:
-                return_list.append(self.max_points[current_index])
+            if abs(x_value-self.max_points[current_index].x)<=float(window_size):
+                if self.max_points[current_index].active:
+                    return_list.append(self.max_points[current_index])
             else:
                 in_range = False
             current_index += 1
