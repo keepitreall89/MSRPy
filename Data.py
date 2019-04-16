@@ -29,8 +29,9 @@ class DataPoint:
 
 class DataSet:
     """expects a CSVFile object as the argument."""
-    def __init__(self, csvfile):
+    def __init__(self, csvfile, calc_base_stats=True):
         self.csv = csvfile
+        self.calc_base_stats_enable = calc_base_stats
         self.path = pathlib.Path(csvfile.path)
         self.name = self.path.parts[len(self.path.parts)-1]
         start = time.time()
@@ -54,18 +55,40 @@ class DataSet:
             raise Exception("CSV File does not have expected number of columns (2). File: {}".format(self.csv.path))
         self.data = []
         row=0
+        if self.calc_base_stats_enable:
+            intensities = []
         for i in self.csv.data:
             try:
                 self.data.append(DataPoint(float(i[0]),float(i[1])))
+                if self.calc_base_stats_enable:
+                    intensities.append(float(i[1]))
                 row+=1
             except ValueError as e:
                 row+=1
                 raise ValueError("Can't convert row: {} to float in file {}. \nValues: {}".format(row, self.path, i))
         self.data.sort()
+        if self.calc_base_stats_enable:
+            intensities.sort()
+            self.base_median = intensities[int(len(intensities)/2)]
+            self.base_average = sum(intensities)/float(len(intensities))
+            intensities = []
     def __len__(self):
         return len(self.data)
     def __getitem__(self, position):
         return self.data[position]
+    
+    def max_nearest_greater_factor(self, factor=2.5):
+        self.max_points.sort(reverse=True)
+        for i in range(len(self.max_points)):
+            if i==0 and len(self.max_points)>1:
+                if not self.max_points[i].y>(factor*self.max_points[i+1].y):
+                    self.max_points[i].active=False
+            elif i==len(self.max_points)-1 and i!=0:
+                if not self.max_points[i].y>(factor*self.max_points[i-1].y):
+                    self.max_points[i].active=False
+            else:
+                if not (self.max_points[i].y>(factor*self.max_points[i-1].y) or self.max_points[i].y>(factor*self.max_points[i+1].y)):
+                    self.max_points[i].active=False
     
     """List must be sorted before calling this function."""
     def _max_values_sorted(self):

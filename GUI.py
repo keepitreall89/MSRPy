@@ -15,18 +15,18 @@ class GUI:
     def __init__(self):
         self.master = tkinter.Tk()
         self.master.title("MSRPy - Mass Spec Reduction")
-        self.master.geometry('810x450')
+        #self.master.geometry('810x450')
         self.source = pathlib.Path(os.getcwd())
         self.destination = None
         self.button_bg = 'white'
         self.button_fg = 'black'
         self.files = []
         self.destination_file=None
-        for i in range(8):
-            self.master.grid_columnconfigure(i, minsize=5)
+        #for i in range(8):
+            #self.master.grid_columnconfigure(i, minsize=5)
         
         ### Build items and placement
-        self.label_source = tkinter.Label(self.master, text='Source')
+        self.label_source = tkinter.Label(self.master, text='Source', font='arial 10 bold')
         self.label_source.grid(column=0, row=0, padx=15, pady=3, sticky='we')
         
         self.button_source = tkinter.Button(self.master, text='Select Folder', bg=self.button_bg, fg=self.button_fg, command=self.source_button_action)
@@ -37,18 +37,18 @@ class GUI:
         self.entry_source.config(state='readonly')
         self.entry_source.grid(column=2, row=0, columnspan=5, sticky='we', padx=10)
         
-        self.label_destination = tkinter.Label(self.master, text='Output')
-        self.label_destination.grid(column=0, row=1, padx=15, pady=5, sticky='we')
+        self.label_destination = tkinter.Label(self.master, text='Output', font='arial 10 bold')
+        self.label_destination.grid(column=0, row=3, padx=15, pady=5, sticky='we')
         
         self.button_destination = tkinter.Button(self.master, text='Select Output', bg=self.button_bg, fg=self.button_fg, command=self.destination_button_action)
-        self.button_destination.grid(column=1, row=1, padx=5, pady=0, sticky='we')
+        self.button_destination.grid(column=1, row=3, padx=5, pady=0, sticky='we')
         
         self.entry_destination = tkinter.Entry(self.master, width=90)
         self.entry_destination.config(state='readonly')
-        self.entry_destination.grid(column=2, row=1, columnspan=5, sticky='we', padx=10)
+        self.entry_destination.grid(column=2, row=3, columnspan=5, sticky='we', padx=10)
         
-        self.label_files = tkinter.Label(self.master, text="Files Found")
-        self.label_files.grid(column=0, row=2)
+        #self.label_files = tkinter.Label(self.master, text="Found:")
+        #self.label_files.grid(column=0, row=1)
         
         #self.file_list = scrolledtext.ScrolledText(self.master, undo=True, wrap='none')
         #self.file_list['background'] = self.button_bg
@@ -68,63 +68,103 @@ class GUI:
         self.file_list_hscroll.grid(column=0, row=1, sticky='ew')
         self.file_list_container.grid_rowconfigure(0, weight=1)
         self.file_list_container.grid_columnconfigure(0, weight=1)
-        self.file_list_container.grid(column = 0, row = 3, columnspan=7, sticky='we', padx=10)
+        self.file_list_container.grid(column = 0, row = 2, columnspan=7, sticky='we', padx=10)
         
-        self.label_file_count = tkinter.Label(self.master, text='{} files.'.format(len(self.files)))
-        self.label_file_count.grid(column=5, row=4, sticky='we')
+        self.label_file_count = tkinter.Label(self.master, text='Found: {} files.'.format(len(self.files)))
+        self.label_file_count.grid(column=0, row=1,columnspan=2, sticky='w')
         
-        self.label_settings = tkinter.Label(self.master, text='Override Default Settings')
-        self.label_settings.grid(column=0, row=4, columnspan=2, sticky='we')
+        self.settings_container = tkinter.Frame(self.master, borderwidth=2, relief='sunken')
         
-        self.label_window = tkinter.Label(self.master, text='Window Size:', justify='right')
-        self.label_window.grid(column=0, row=5, sticky='e')
+        self.label_settings = tkinter.Label(self.settings_container, text='Override Default Settings', font='arial 8 bold')
+        self.label_settings.grid(column=0, row=0, columnspan=2, sticky='we')
         
-        self.spinbox_window = tkinter.Spinbox(self.master, from_=0, to=3, increment=0.1, width=7, justify='left')
+        self.label_window = tkinter.Label(self.settings_container, text='Window Size:', justify='right')
+        self.label_window.grid(column=0, row=1, sticky='we')
+        
+        self.spinbox_window = tkinter.Spinbox(self.settings_container, from_=0, to=3, increment=0.1, width=7, justify='left')
         self.spinbox_window.delete(0, tkinter.END)
         self.spinbox_window.insert(0, '0.2')
-        self.spinbox_window.grid(column=1, row=5)
+        self.spinbox_window.grid(column=1, row=1, sticky='w')
         
-        self.label_threshold = tkinter.Label(self.master, text='Min Threshold:', justify='right')
-        self.label_threshold.grid(column=0, row=6, sticky='e')
+        self.label_threshold = tkinter.Label(self.settings_container, text='Min Threshold:', justify='right')
+        self.label_threshold.grid(column=0, row=2, sticky='we')
         
-        self.spinbox_threshold = tkinter.Spinbox(self.master, from_=0, to=400, increment=0.1, width=7, justify='left')
+        self.spinbox_threshold = tkinter.Spinbox(self.settings_container, from_=0, to=400, increment=0.1, width=7, justify='left')
         self.spinbox_threshold.delete(0, tkinter.END)
-        self.spinbox_threshold.grid(column=1, row=6)
-        self.label_threshold_explain = tkinter.Label(self.master, text='By Default, threshold calculated on a per file basis, average of points that are not peaks.', justify='left')
-        self.label_threshold_explain.grid(column=0, row=7, columnspan=3, sticky='e')
+        self.spinbox_threshold.config(state='readonly')
+        self.spinbox_threshold.grid(column=1, row=2,sticky='w')
+        #self.label_threshold_explain = tkinter.Label(self.master, text='By Default, threshold calculated on a per file basis, average of points that are not peaks.', justify='left')
+        #self.label_threshold_explain.grid(column=0, row=7, columnspan=3, sticky='e')
+        
+        self.label_threshold_setting = tkinter.Label(self.settings_container, text = 'Threshold Mode:', justify='right')
+        self.label_threshold_setting.grid(column=2, row=2, sticky='we')
+        
+        self.combo_threshold = tkinter.ttk.Combobox(self.settings_container)
+        self.combo_threshold['values'] = ('Non Peak Average', 'Manual', 'Median', 'Overall Avg')
+        self.combo_threshold.current(0)
+        self.combo_threshold.bind("<<ComboboxSelected>>", self.threshold_action)
+        self.combo_threshold.grid(column=3, row=2, sticky='we')
+        
+        self.settings_container.grid(column=2, row=4, columnspan=4, rowspan=3)
         
         self.state_headers = tkinter.BooleanVar()
         self.state_headers.set(False)
         self.checkbox_headers = tkinter.Checkbutton(self.master, text='My data has Headers', var=self.state_headers)
-        self.checkbox_headers.grid(column=5, row=5, sticky='we')
+        self.checkbox_headers.grid(column=2, row=1,columnspan=2, sticky='w', padx=10)
         
         self.label_id_column = tkinter.Label(self.master, text="Column A:")
-        self.label_id_column.grid(column=3, row=5, sticky='e')
+        self.label_id_column.grid(column=0, row=4, sticky='e')
         
         self.combo_id_column = tkinter.ttk.Combobox(self.master)
         self.combo_id_column['values'] = ('Full Path', 'Filename')
         self.combo_id_column.current(1)
-        self.combo_id_column.grid(column=4, row=5, sticky='we')
+        self.combo_id_column.grid(column=1, row=4, sticky='we')
         
-        self.label_output_type = tkinter.Label(self.master, text='Output:')
-        self.label_output_type.grid(column=3, row=6, sticky='e')
+        self.label_output_type = tkinter.Label(self.master, text='Output Data:')
+        self.label_output_type.grid(column=0, row=5, sticky='e')
         
         self.combo_output = tkinter.ttk.Combobox(self.master)
         self.combo_output['values'] = ('Filtered Only', 'Max values at each M/Z', 'All Data')
         self.combo_output.current(0)
-        self.combo_output.grid(column=4, row=6, sticky='we')
+        self.combo_output.grid(column=1, row=5, sticky='we')
+        
+        self.label_factor = tkinter.Label(self.settings_container, text='> Neighbors * :', justify='right')
+        self.label_factor.grid(column=2, row=1, sticky='e')
+        
+        self.spinbox_factor = tkinter.Spinbox(self.settings_container, from_=0, to=50, increment=0.1, width=7, justify='left')
+        self.spinbox_factor.delete(0, tkinter.END)
+        self.spinbox_factor.insert(0, '2.5')
+        self.spinbox_factor.config(state='readonly')
+        self.spinbox_factor.grid(column=3, row=1, sticky='we')
+        
+        self.state_factor = tkinter.BooleanVar()
+        self.state_factor.set(False)
+        self.checkbox_factor = tkinter.Checkbutton(self.settings_container, text='Point must be X times > than neighbors', var=self.state_factor, command=self.factor_action)
+        self.checkbox_factor.grid(column=2, row=0, sticky='we', padx=10, columnspan=2)
         
         self.current_progress_var=tkinter.DoubleVar(0)
         self.style_progress = ttk.Style()
         self.style_progress.theme_use('default')
         self.style_progress.configure('black.Horizontal.TProgressbar', background='green')
         self.progress = Progressbar(self.master, length=300, style='black.Horizontal.TProgressbar', variable=self.current_progress_var, maximum=100)
-        self.progress.grid(column=1, row=8, columnspan=3, pady=15, sticky='we')
+        self.progress.grid(column=1, row=8, columnspan=5, pady=15, sticky='we')
         
         self.button_run = tkinter.Button(self.master, text="Execute", bg="#d2f9c2", fg=self.button_fg, command=self.execute_button_error_catch)
         self.button_run.grid(column=0, row=8, padx=15, pady=15, sticky='we')
         
         self.master.mainloop()
+        
+    def factor_action(self):
+        if self.state_factor:
+            self.spinbox_factor.config(state='normal')
+        else:
+            self.spinbox_factor.config(state='readonly')
+        
+    def threshold_action(self, junk):
+        if self.combo_threshold.current()==1:
+            self.spinbox_threshold.config(state='normal')
+        else:
+            self.spinbox_threshold.config(state='readonly')
     
     def destination_button_action(self):
         self.destination_file = filedialog.asksaveasfile(defaultextension='.csv', initialdir=self.source, initialfile='msrpy.out.csv',
@@ -170,9 +210,12 @@ class GUI:
             except:
                 tkinter.messagebox.showerror('Window Size Error', 'Could not cast Window Size as number')
             try: 
-                self.threshold = self.spinbox_threshold.get()
-                if self.threshold != '' or len(str(self.threshold))>1:
-                    self.threshold = float(self.threshold)
+                if self.combo_threshold.current()==1:
+                    self.threshold = self.spinbox_threshold.get()
+                    if self.threshold != '' or len(str(self.threshold))>1:
+                        self.threshold = float(self.threshold)
+                    else:
+                        self.threshold=None
                 else:
                     self.threshold=None
             except:
@@ -199,6 +242,22 @@ class GUI:
                     column_a=data.name
                 else:
                     column_a=data.name
+                    
+                #Threshold Settings
+                if self.combo_threshold.current()==0:
+                    self.threshold=data.average_non_inflections
+                elif self.combo_threshold.current()==1:
+                    self.threshold=float(self.spinbox_threshold.get())
+                elif self.combo_threshold.current()==2:
+                    self.threshold=data.base_median
+                elif self.combo_threshold.current()==3:
+                    self.threshold=data.base_average
+                else:
+                    self.threshold=None
+                    
+                #Factor
+                if self.state_factor:
+                    data.max_nearest_greater_factor(float(self.spinbox_factor.get()))
                 if self.combo_output.current()==0:
                     data.max_points.sort(reverse=True)
                     for row in data.max_points:
