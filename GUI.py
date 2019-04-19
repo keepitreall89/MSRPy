@@ -155,7 +155,7 @@ class GUI:
         self.master.mainloop()
         
     def factor_action(self):
-        if self.state_factor:
+        if self.state_factor.get()==True:
             self.spinbox_factor.config(state='normal')
         else:
             self.spinbox_factor.config(state='readonly')
@@ -256,7 +256,8 @@ class GUI:
                     self.threshold=None
                     
                 #Factor
-                if self.state_factor:
+                if self.state_factor.get()==True:
+                    print("Checked")
                     data.max_nearest_greater_factor(float(self.spinbox_factor.get()))
                 if self.combo_output.current()==0:
                     data.max_points.sort(reverse=True)
