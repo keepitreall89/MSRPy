@@ -257,7 +257,6 @@ class GUI:
                     
                 #Factor
                 if self.state_factor.get()==True:
-                    print("Checked")
                     data.max_nearest_greater_factor(float(self.spinbox_factor.get()))
                 if self.combo_output.current()==0:
                     data.max_points.sort(reverse=True)
