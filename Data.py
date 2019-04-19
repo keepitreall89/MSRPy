@@ -9,6 +9,8 @@ class DataPoint:
         self.inflection=False
         self.active=True
         self.max_at_x=False
+        self.average_at_x = None
+        self.sum_at_x = None
     def __eq__(self, other):
         try:
             return self.x==other.x and self.y==other.y
@@ -95,16 +97,22 @@ class DataSet:
         i = 0
         self.max_points = []
         temp = []
+        temp_sum = 0
         while i<len(self.data):
             if len(temp)==0:
                 temp.append(self.data[i])
+                temp_sum+=self.data[i].y
             elif self.data[i].x==temp[0].x:
                 temp.append(self.data[i])
+                temp_sum+=self.data[i].y
             else:
                 temp.sort()
                 if temp[0].y>float(0):
                     temp[0].max_at_x=True
+                    temp[0].sum_at_x=temp_sum
+                    temp[0].avg_at_x=temp_sum/float(len(temp))
                     self.max_points.append(temp[0])
+                temp_sum=0
                 temp = []
                 temp.append(self.data[i])
             i += 1

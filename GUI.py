@@ -286,7 +286,7 @@ class GUI:
                         if self.threshold is None:
                             self.out_data.append([str(column_a), str(row.x), str(row.y),str(row.max_at_x), str(row.inflection), str(row.max_at_x and row.active and row.inflection and row.y>data.average_non_inflections)])
                         elif not self.threshold is None:
-                            self.out_data.append([str(column_a), str(row.x), str(row.y),str(row.max_at_x), str(row.inflection), str(row.max_at_x and row.active and row.inflection and row.y>self.threshold)])                    
+                            self.out_data.append([str(column_a), str(row.x), str(row.y),str(row.max_at_x), str(row.inflection), str(row.max_at_x and row.active and row.inflection and row.y>self.threshold)])
                 self.current_progress+=1
                 self.current_progress_var.set((self.current_progress/len(self.files))*100)
                 self.master.update_idletasks()
